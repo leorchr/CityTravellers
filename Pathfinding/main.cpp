@@ -31,7 +31,8 @@ int main(int argc, char** argv) {
 	C->setRoads(cityC);
 	D->setRoads(cityD);
 	E->setRoads(cityE);
-	A->findClosestPath(E);
+	std::vector<City*> path = E->findClosestPath(A);
+	
 	return 0;
 }
 

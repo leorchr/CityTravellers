@@ -11,6 +11,7 @@ public:
 	City(std::string name);
 	
 	void setRoads(std::vector<Road*> roads);
+	std::vector<City*> getAllPaths(City* endPoint, std::vector<City*> currentPath);
 
 	std::vector<City*> findClosestPath(City* endPoint);
 	std::vector<Road*> getRoads(){return roads;}
@@ -18,6 +19,8 @@ public:
 private:
 	std::string name;
 	std::vector<Road*> roads;
+
+	static std::vector<std::vector<City*>> allPath;
 };
 
 struct Road {

@@ -1,4 +1,5 @@
 #include "City.h"
+#include <climits>
 #include <iostream>
 using namespace std;
 
@@ -9,45 +10,47 @@ void City::setRoads(std::vector<Road*> roads)
 	this->roads = std::move(roads);
 }
 
-std::vector<City*> City::findClosestPath(City* endPoint)
+std::vector<City*> City::getAllPaths(City* endPoint, std::vector<City*> currentPath)
 {
-	City* currentCity = this;
-	int cost = 0;
-	std::vector<City*> path;
-	path.emplace_back(currentCity);
-	
-	while(currentCity != endPoint)
+	if(currentPath.size() == 5)
 	{
-		int currentLowestCost = 10000;
-		for(int i = 0; i<currentCity->getRoads().size(); i++)
+		if(currentPath.back() == endPoint) allPath.emplace_back(currentPath);
+	}
+	if(currentPath.size() < 5)
+	{
+		for(size_t i = 0; i<roads.size(); i++)
 		{
-
-			//Find the city
-			if(currentCity->getRoads()[i]->start == endPoint)
+			Road* currentRoad = roads[i];
+			for(size_t i = 0; i < currentPath.size()-1; i++)
 			{
-				currentCity = currentCity->getRoads()[i]->start;
-				break;
-			}
-			if(currentCity->getRoads()[i]->end == endPoint)
-			{
-				currentCity = currentCity->getRoads()[i]->end;
-				break;
+				if(currentRoad->start == currentPath[i]) return std::vector<City*>();
+				if(currentRoad->end == currentPath[i]) return std::vector<City*>();
 			}
 
-
-
-			//Not find
-			//Need to choose another one with the lowest length
-			if(currentCity->getRoads()[i]->length < currentLowestCost)
+			if(currentPath.back() == roads[i]->start)
 			{
-				currentLowestCost = currentCity->getRoads()[i]->length;
-				if(currentCity->getRoads()[i]->start == currentCity) currentCity = currentCity->getRoads()[i]->start;
-				else currentCity = currentCity->getRoads()[i]->end;
+				currentPath.emplace_back(roads[i]->end);
+				return getAllPaths(endPoint, currentPath);
+			}
+
+			if(currentPath.back() == roads[i]->end)
+			{
+				currentPath.emplace_back(roads[i]->start);
+				return getAllPaths(endPoint, currentPath);
 			}
 		}
-		cost += currentLowestCost;
-		path.emplace_back(currentCity);
 	}
+}
+
+
+std::vector<City*> City::findClosestPath(City* endPoint)
+{
+	std::vector<City*> path;
+	path.emplace_back(this);
+	
+	getAllPaths(endPoint, path);
 
 	return path;
 }
+
+vector<vector<City*>> City::allPath = vector<vector<City*>>();
