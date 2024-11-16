@@ -11,11 +11,17 @@ public:
 	City(std::string name);
 	
 	void setRoads(std::vector<Road*> roads);
-	std::vector<City*> getAllPaths(City* endPoint, std::vector<City*> currentPath);
+	void findAllPaths(std::vector<City*> currentPath);
 
-	std::vector<City*> findClosestPath(City* endPoint);
+	std::vector<Road*> getMinimumDistance();
+	std::vector<std::vector<Road*>> transformCitiesInPath(std::vector<std::vector<City*>> citiesPath);
+	std::vector<Road*> findClosestPath();
 	std::vector<Road*> getRoads(){return roads;}
-	
+
+	std::vector<std::vector<City*>> getAllPath() { return allPath;}
+	void printPath(std::vector<Road*> path);
+	std::string getName() { return name; }
+
 private:
 	std::string name;
 	std::vector<Road*> roads;

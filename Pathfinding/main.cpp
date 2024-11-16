@@ -2,6 +2,7 @@
 #include <iostream>
 using namespace std;
 
+vector<City*> cities;
 City* A = new City("A");
 City* B = new City("B");
 City* C = new City("C");
@@ -13,7 +14,7 @@ Road* AC = new Road(2,A,C);
 Road* BC = new Road(3,B,C);
 Road* BD = new Road(3,B,D);
 Road* BE = new Road(1,B,E);
-Road* CD = new Road(1,C,D);
+Road* CD = new Road(50,C,D);
 Road* CE = new Road(3,C,E);
 Road* DE = new Road(3,D,E);
 
@@ -25,13 +26,23 @@ std::vector<Road*> cityE = {BE, CE, DE};
 
 
 int main(int argc, char** argv) {
-	std::cout << "Test" << std::endl;
+	cities.emplace_back(A);
+	cities.emplace_back(B);
+	cities.emplace_back(C);
+	cities.emplace_back(D);
+	cities.emplace_back(E);
 	A->setRoads(cityA);
 	B->setRoads(cityB);
 	C->setRoads(cityC);
 	D->setRoads(cityD);
 	E->setRoads(cityE);
-	std::vector<City*> path = E->findClosestPath(A);
+	for (size_t i = 0; i<cities.size(); i++)
+	{
+		cout<< "Chemin le plus court de la ville " << cities[i]->getName() << "\n";
+		std::vector<Road*> path = cities[i]->findClosestPath();
+		cities[i]->printPath(path);
+		cout << "\n";
+	}
 	
 	return 0;
 }
