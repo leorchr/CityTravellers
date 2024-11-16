@@ -4,27 +4,44 @@
 #include <iostream>
 using namespace std;
 
-City::City(std::string name) : name(std::move(name)){}
+City::City(std::string name) : name(std::move(name)), allPath()
+{}
 
 void City::setRoads(std::vector<Road*> roads)
 {
 	this->roads = std::move(roads);
 }
 
-void City::findAllPaths(std::vector<City*> currentPath)
+vector<Road*> City::findSmallestPath()
 {
+	// Base for all paths
+	vector<City*> path;
+	path.emplace_back(this);
+
+	// Get all possible paths
+	findAllCityPaths(path);
+
+	// Transform all possible cities path into roads path
+	auto availablePaths = changeCityListToRoads(getAllPath());
+
+	// Check the smallest path
+	auto smallestPath = getSmallestPath(availablePaths);
+	return smallestPath;
+}
+
+void City::findAllCityPaths(std::vector<City*> currentPath)
+{
+	//Init Current city
+	City* currentCity = currentPath.back();
 	
-	// Si on arrive à la fin
+	// If last city/path
 	if(currentPath.size() == 6)
 	{
 		if(currentPath.back() == currentPath[0]) allPath.emplace_back(currentPath);
 	}
-
-	//Init Current city
-	City* currentCity = currentPath.back();
 	
-	// Si on est en cours de route 
-	if(currentPath.size() < 6 && currentPath.size() > 1)
+	// If between beginning and end of the whole path 
+	else if(currentPath.size() < 6 && currentPath.size() > 1)
 	{
 		vector<Road*> currentRoads = currentCity->getRoads();
 		
@@ -46,17 +63,19 @@ void City::findAllPaths(std::vector<City*> currentPath)
 			{
 				std::vector<City*> currentPathCopy = currentPath;
 				currentPathCopy.emplace_back(currentRoads[i]->end);
-				findAllPaths(currentPathCopy);
+				findAllCityPaths(currentPathCopy);
 			}
 
 			if(currentPath.back() == currentRoads[i]->end)
 			{
 				std::vector<City*> currentPathCopy = currentPath;
 				currentPathCopy.emplace_back(currentRoads[i]->start);
-				findAllPaths(currentPathCopy);
+				findAllCityPaths(currentPathCopy);
 			}
 		}
 	}
+
+	// If this is the first road
 	if(currentPath.size() == 1)
 	{
 		vector<Road*> currentRoads = currentCity->getRoads();
@@ -66,42 +85,22 @@ void City::findAllPaths(std::vector<City*> currentPath)
 			{
 				std::vector<City*> currentPathCopy = currentPath;
 				currentPathCopy.emplace_back(currentRoads[i]->end);
-				findAllPaths(currentPathCopy);
+				findAllCityPaths(currentPathCopy);
 			}
 
 			if(currentPath.back() == currentRoads[i]->end)
 			{
 				std::vector<City*> currentPathCopy = currentPath;
 				currentPathCopy.emplace_back(currentRoads[i]->start);
-				findAllPaths(currentPathCopy);
+				findAllCityPaths(currentPathCopy);
 			}
 		}
 	}
 }
 
-vector<Road*> City::getMinimumDistance()
+vector<vector<Road*>> City::changeCityListToRoads(vector<vector<City*>> citiesPath)
 {
-	auto paths = transformCitiesInPath(getAllPath());
-	vector<Road*> minimumPath;
-	int minimumDistance = INT_MAX;
-	for (size_t i = 0; i<paths.size(); i++)
-	{
-		int currentDistance = 0;
-		for (size_t j = 0; j<paths[i].size(); j++)
-		{
-			currentDistance += paths[i][j]->length;
-		}
-		if (currentDistance<minimumDistance)
-		{
-			minimumDistance = currentDistance;
-			minimumPath = paths[i];
-		}
-	}
-	return minimumPath;
-}
-
-vector<vector<Road*>> City::transformCitiesInPath(vector<vector<City*>> citiesPath)
-{
+	// Convert a vector of cities into a vector of roads 
 	vector<vector<Road*>> allRoads; 
 	for (size_t i = 0; i<citiesPath.size(); i++)
 	{
@@ -122,19 +121,30 @@ vector<vector<Road*>> City::transformCitiesInPath(vector<vector<City*>> citiesPa
 	return allRoads;
 }
 
-std::vector<Road*> City::findClosestPath()
+vector<Road*> City::getSmallestPath(vector<vector<Road*>> availablePath)
 {
-	std::vector<City*> path;
-	path.emplace_back(this);
-	findAllPaths(path);
-
-	transformCitiesInPath(getAllPath());
-	auto minimumPath = getMinimumDistance();
+	// Check which roads path has the smallest distance
+	vector<Road*> minimumPath;
+	int minimumDistance = INT_MAX;
+	for (size_t i = 0; i<availablePath.size(); i++)
+	{
+		int currentDistance = 0;
+		for (size_t j = 0; j<availablePath[i].size(); j++)
+		{
+			currentDistance += availablePath[i][j]->length;
+		}
+		if (currentDistance<minimumDistance)
+		{
+			minimumDistance = currentDistance;
+			minimumPath = availablePath[i];
+		}
+	}
 	return minimumPath;
 }
 
 void City::printPath(vector<Road*> path)
 {
+	// Print a path and its cost in the console
 	City* currentCity = this;
 	cout << this->name;
 	for (size_t  i = 0; i<path.size(); i++)
@@ -157,5 +167,3 @@ void City::printPath(vector<Road*> path)
 	}
 	cout << "\nDistance : " << distance << "\n";
 }
-
-vector<vector<City*>> City::allPath = vector<vector<City*>>();

@@ -1,5 +1,9 @@
 #include "City.h"
 #include <iostream>
+#include <bitset>
+#include <unordered_map>
+#include <cmath>
+#include <climits>
 using namespace std;
 
 vector<City*> cities;
@@ -14,7 +18,7 @@ Road* AC = new Road(2,A,C);
 Road* BC = new Road(3,B,C);
 Road* BD = new Road(3,B,D);
 Road* BE = new Road(1,B,E);
-Road* CD = new Road(50,C,D);
+Road* CD = new Road(1,C,D);
 Road* CE = new Road(3,C,E);
 Road* DE = new Road(3,D,E);
 
@@ -24,33 +28,87 @@ std::vector<Road*> cityC = {AC, BC, CD, CE};
 std::vector<Road*> cityD = {BD, CD, DE};
 std::vector<Road*> cityE = {BE, CE, DE};
 
+void init();
+int solution1(int N);
+vector<int> solution2(vector<int> &A, int K);
+int solution3(vector<int> &A);
+int solution4(int X, int Y, int D);
+int solution5(vector<int> &A);
+int solution6(vector<int> &A);
+void printIntVector(vector<int> vectorToPrint);
+
 
 int main(int argc, char** argv) {
-	cities.emplace_back(A);
-	cities.emplace_back(B);
-	cities.emplace_back(C);
-	cities.emplace_back(D);
-	cities.emplace_back(E);
+
+	// Travelling salesman problem
+	cout<< "\nTravelling salesman problem : \n\n";
+	init();
+	for (size_t i = 0; i<cities.size(); i++)
+	{
+		cout<< "Smallest path from city " << cities[i]->getName() << "\n";
+		std::vector<Road*> path = cities[i]->findSmallestPath();
+		cities[i]->printPath(path);
+		cout << "\n";
+	}
+
+	// Codility n1
+	cout<<"\nCodility n1\n";
+	int answer1 = solution1(1041);
+	cout<<"The length of the longest binary gap of 1041 is : "<<answer1<<"\n";
+
+	// Codility n2
+	cout<<"\nCodility n2\n";
+	vector<int> vector2{3, 8, 9, 7, 6};
+	cout<<"The vector : ";
+	printIntVector(vector2);
+	cout<<" rotated 3 times gives : ";
+	printIntVector(solution2(vector2, 3));
+
+	// Codility n3
+	cout<<"\n\nCodility n3\n";
+	std::vector<int> vector3{9, 3, 9, 3, 9, 7, 9};
+	cout<<"The unpaired element of the vector ";
+	printIntVector(vector3);
+	int answer3 = solution3(vector3);
+	cout << " is " << answer3;
+
+	// Codility n4
+	cout<<"\n\nCodility n4\n";
+	int answer4 = solution4(10,85,30);
+	cout << "The minimal number of jumps from position 10 to a position equal to \nor greater than 85 with 30 per jump is : "<< answer4;
+
+	// Codility n5
+	cout<<"\n\nCodility n5\n";
+	std::vector<int> vector5{2, 3, 1, 5};
+	cout<<"The missing element of the array ";
+	printIntVector(vector5);
+	int answer5 = solution5(vector5);
+	cout << " is "<< answer5;
+
+	// Codility n6
+	cout<<"\n\nCodility n6\n";
+	std::vector<int> vector6{3, 1, 2, 4, 3};
+	cout<<"The minimal difference of the non-empty array ";
+	printIntVector(vector6);
+	int answer6 = solution6(vector6);
+	cout<<" is " << answer6 << "\n";
+}
+
+void init()
+{
 	A->setRoads(cityA);
 	B->setRoads(cityB);
 	C->setRoads(cityC);
 	D->setRoads(cityD);
 	E->setRoads(cityE);
-	for (size_t i = 0; i<cities.size(); i++)
-	{
-		cout<< "Chemin le plus court de la ville " << cities[i]->getName() << "\n";
-		std::vector<Road*> path = cities[i]->findClosestPath();
-		cities[i]->printPath(path);
-		cout << "\n";
-	}
-	
-	return 0;
+	cities.emplace_back(A);
+	cities.emplace_back(B);
+	cities.emplace_back(C);
+	cities.emplace_back(D);
+	cities.emplace_back(E);
 }
 
-
 // Exercice 1
-
-#include <bitset>
 
 int solution1(int N) {
 	std::bitset<64> bit(N);
@@ -86,8 +144,6 @@ vector<int> solution2(vector<int> &A, int K) {
 
 // Exercice 3
 
-#include <unordered_map>
-
 int solution3(vector<int> &A) {
 	std::unordered_map<int, int> answer;
 	for(int i = 0; i<A.size(); i++){
@@ -109,8 +165,6 @@ int solution4(int X, int Y, int D) {
 
 // Exercice 5
 
-#include <unordered_map>
-
 int solution5(vector<int> &A) {
 	std::unordered_map<int, bool> answer;
 
@@ -129,9 +183,6 @@ int solution5(vector<int> &A) {
 }
 
 // Exercice 6
-
-#include <cmath>
-#include <climits>
 
 int solution6(vector<int> &A) {
 	vector<int> sum(A.size());
@@ -159,4 +210,14 @@ int solution6(vector<int> &A) {
 		if(tempAnswer < currentLowest) currentLowest = tempAnswer;
 	}
 	return currentLowest;
+}
+
+void printIntVector(vector<int> vectorToPrint)
+{
+	cout<<"[";
+	for (size_t i = 0; i < vectorToPrint.size(); ++i) {
+		if (i==0) cout << vectorToPrint[i];
+		else cout << " " << vectorToPrint[i];
+	}
+	cout<<"]";
 }
